@@ -263,7 +263,7 @@ class ViewController: UIViewController {
 
         googlePaySlider.configure(
             sliderColor: .systemGreen,
-            text: "Slide to Pay ₹255"
+            text: "Slide Right for Accept"
         )
 
         googlePaySlider.onPaymentCompleted = { [weak self] (status: PaymentStatus) in
