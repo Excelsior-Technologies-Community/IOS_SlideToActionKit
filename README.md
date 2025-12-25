@@ -20,7 +20,7 @@ A lightweight Swift Package providing **slide-to-action UI components** for both
 3. Paste the repository URL:
 
 ```
-https://github.com/your-username/IOS_SlideToActionKit
+https://github.com/Excelsior-Technologies-Community/IOS_SlideToActionKit
 ```
 
 4. Select **SlideToActionKit**
