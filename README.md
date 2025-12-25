@@ -19,9 +19,10 @@ A lightweight Swift Package providing **slide-to-action UI components** for both
 2. Go to **File → Add Packages…**
 3. Paste the repository URL:
 
-   ```
-   https://github.com/your-username/IOS_SlideToActionKit
-   ```
+```
+https://github.com/your-username/IOS_SlideToActionKit
+```
+
 4. Select **SlideToActionKit**
 5. Add it to your target
 
@@ -58,7 +59,7 @@ import SlideToActionKit
 
 ---
 
-## 2️⃣ SwiftUI – Minimal Setup
+## 2️⃣ SwiftUI – Full Example
 
 ```swift
 import SwiftUI
@@ -66,18 +67,12 @@ import SlideToActionKit
 
 struct ContentView: View {
 
-    // 🔹 LEFT / RIGHT SLIDER STATE
     @State private var callDirection: SlideDirection = .none
-
-    // 🔹 GOOGLE PAY SLIDER STATE
     @State private var paymentStatus: PaymentStatus = .pending
 
     var body: some View {
         VStack(spacing: 40) {
 
-            // =========================
-            // 1️⃣ CALL LEFT / RIGHT SLIDER
-            // =========================
             VStack(spacing: 12) {
                 Text("Call Slider")
                     .font(.headline)
@@ -92,14 +87,10 @@ struct ContentView: View {
                 .frame(height: 70)
 
                 Text(callResultText)
-                    .font(.subheadline)
             }
 
             Divider()
 
-            // =========================
-            // 2️⃣ GOOGLE PAY SLIDER
-            // =========================
             VStack(spacing: 12) {
                 Text("Slider")
                     .font(.headline)
@@ -112,31 +103,23 @@ struct ContentView: View {
                 .frame(height: 56)
 
                 Text(paymentResultText)
-                    .font(.subheadline)
             }
         }
         .padding()
     }
 
-    // 🔹 CALL SLIDER TEXT
     private var callResultText: String {
         switch callDirection {
-        case .left:
-            return "Call Declined"
-        case .right:
-            return "Call Accepted"
-        case .none:
-            return "Waiting for action"
+        case .left: return "Call Declined"
+        case .right: return "Call Accepted"
+        case .none: return "Waiting for action"
         }
     }
 
-    // 🔹 PAYMENT SLIDER TEXT
     private var paymentResultText: String {
         switch paymentStatus {
-        case .pending:
-            return "Waiting for Accept"
-        case .done:
-            return "Accepted"
+        case .pending: return "Waiting for Accept"
+        case .done: return "Accepted"
         }
     }
 }
@@ -157,14 +140,12 @@ struct ContentView: View {
 
 ## 1️⃣ What Developer Needs in Storyboard
 
-### Add UI Elements
-
-You must add **4 UI components**:
+Add **4 UI components**:
 
 | UI Element   | Count | Purpose                      |
-| ------------ | ----- | ---------------------------- |
-| `UIView`     | 2     | Call Slider + Payment Slider |
-| `UITextView` | 2     | Result display               |
+| ------------ | ----: | ---------------------------- |
+| `UIView`     |     2 | Call Slider + Payment Slider |
+| `UITextView` |     2 | Result display               |
 
 ---
 
@@ -179,7 +160,53 @@ You must add **4 UI components**:
 
 ---
 
-## 3️⃣ Create IBOutlets
+## ⚠️ 3️⃣ IMPORTANT: Set Module Name (MANDATORY)
+
+Because **SlideToActionKit is a Swift Package**, Storyboard **cannot guess the module automatically**.
+
+### You MUST set the module manually.
+
+---
+
+### ✅ For **Call Slider UIView**
+
+In **Identity Inspector (⌥⌘3)**:
+
+```
+Class   : CallSliderView
+Module  : SlideToActionKit
+☐ Inherit Module From Target   (UNCHECK this)
+```
+
+---
+
+### ✅ For **Google Pay Slider UIView**
+
+```
+Class   : GooglePaySliderView
+Module  : SlideToActionKit
+☐ Inherit Module From Target   (UNCHECK this)
+```
+
+---
+
+### 📸 What It Should Look Like (Text Representation)
+
+```
+Custom Class
+-----------
+Class:   CallSliderView
+Module:  SlideToActionKit
+☐ Inherit Module From Target
+```
+
+⚠️ **This step is MANDATORY**
+Storyboard **cannot guess Swift Package modules**.
+If skipped, the app will crash with **Unknown class** error.
+
+---
+
+## 4️⃣ Create IBOutlets
 
 ```swift
 @IBOutlet weak var callSliderView: CallSliderView!
@@ -191,7 +218,7 @@ You must add **4 UI components**:
 
 ---
 
-## 4️⃣ UIKit – Full Example
+## 5️⃣ UIKit – Full Example
 
 ```swift
 import UIKit
@@ -208,13 +235,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // =========================
-        // CALL SLIDER SETUP
-        // =========================
         SliderValue.text = "NONE"
         SliderValue.isEditable = false
         SliderValue.textAlignment = .center
-        SliderValue.font = UIFont.boldSystemFont(ofSize: 18)
+        SliderValue.font = .boldSystemFont(ofSize: 18)
 
         callSliderView.configure(
             rightColor: .systemGreen,
@@ -223,22 +247,16 @@ class ViewController: UIViewController {
             icon: UIImage(systemName: "phone.fill")
         )
 
-        callSliderView.onSlideCompleted = { [weak self] direction in
+        callSliderView.onSlideCompleted = { [weak self] (direction: SlideDirection) in
             guard let self else { return }
 
             switch direction {
-            case .right:
-                self.SliderValue.text = "RIGHT"
-            case .left:
-                self.SliderValue.text = "LEFT"
-            case .none:
-                self.SliderValue.text = "NONE"
+            case .right: self.SliderValue.text = "RIGHT"
+            case .left: self.SliderValue.text = "LEFT"
+            case .none: self.SliderValue.text = "NONE"
             }
         }
 
-        // =========================
-        // GOOGLE PAY SLIDER SETUP
-        // =========================
         statusTextView.text = "Waiting for payment"
         statusTextView.isEditable = false
         statusTextView.textAlignment = .center
@@ -248,7 +266,7 @@ class ViewController: UIViewController {
             text: "Slide to Pay ₹255"
         )
 
-        googlePaySlider.onPaymentCompleted = { [weak self] status in
+        googlePaySlider.onPaymentCompleted = { [weak self] (status: PaymentStatus) in
             guard let self else { return }
 
             switch status {
@@ -267,9 +285,9 @@ class ViewController: UIViewController {
 ## 🧠 UIKit Notes
 
 * Works with **Storyboard & Programmatic UI**
+* Module name must be set in Storyboard
 * Gestures handled internally
-* Callbacks give clean business logic
-* Safe to reuse in multiple screens
+* Safe for reuse across screens
 
 ---
 
@@ -278,4 +296,5 @@ class ViewController: UIViewController {
 * iOS 14+
 * SwiftUI
 * UIKit
-  
+
+ 
